@@ -1,0 +1,15 @@
+{
+  "name": "browser-mcp",
+  "version": "1.0.0",
+  "description": "Silver Tier Browser MCP Server — web navigation and form filling via Playwright",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "DRY_RUN=true node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "playwright": "^1.40.0"
+  }
+}

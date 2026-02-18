@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(powershell -Command \"\n$base = ''C:\\\\D\\\\github\\\\Hackthon-Zero-Silver-Tier-samad-developer-''\n$dirs = @\\(\n  ''Approved'',''Plans'',''Pending_Approval'',''Done'',''Logs'',''Briefings'',''Drop'',\n  ''watchers'',''mcp_servers\\\\email_mcp'',''mcp_servers\\\\browser_mcp'',\n  ''skills\\\\whatsapp'',''skills\\\\social'',''Accounting\\\\Invoices''\n\\)\nforeach \\($d in $dirs\\) { New-Item -ItemType Directory -Force -Path \"\"$base\\\\$d\"\" | Out-Null }\nWrite-Host ''All folders created''\n\")",
+      "Bash(powershell -Command:*)"
+    ]
+  }
+}

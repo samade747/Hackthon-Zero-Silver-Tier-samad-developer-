@@ -1,0 +1,32 @@
+{
+  "servers": [
+    {
+      "name": "filesystem",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "REPLACE_WITH_YOUR_VAULT_PATH"
+      ]
+    },
+    {
+      "name": "email",
+      "command": "node",
+      "args": ["REPLACE_WITH_FULL_PATH/mcp_servers/email_mcp/index.js"],
+      "env": {
+        "GMAIL_CREDENTIALS_PATH": "REPLACE_WITH_PATH/gmail_credentials.json",
+        "GMAIL_TOKEN_PATH": "REPLACE_WITH_PATH/gmail_token.json",
+        "DRY_RUN": "true",
+        "MAX_EMAILS_PER_HOUR": "10"
+      }
+    },
+    {
+      "name": "browser",
+      "command": "node",
+      "args": ["REPLACE_WITH_FULL_PATH/mcp_servers/browser_mcp/index.js"],
+      "env": {
+        "DRY_RUN": "true"
+      }
+    }
+  ]
+}
