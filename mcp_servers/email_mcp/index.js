@@ -59,7 +59,22 @@ async function getGmailClient() {
     creds.installed || creds.web;
 
   const auth = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-  auth.setCredentials(JSON.parse(fs.readFileSync(tokenPath, 'utf8')));
+  const token = JSON.parse(fs.readFileSync(tokenPath, 'utf8'));
+  auth.setCredentials(token);
+
+  // Refresh token if expired or about to expire (within 5 minutes)
+  const expiryDate = token.expiry_date;
+  if (expiryDate && Date.now() > expiryDate - 5 * 60 * 1000) {
+    try {
+      const { credentials } = await auth.refreshAccessToken();
+      auth.setCredentials(credentials);
+      // Persist the refreshed token
+      fs.writeFileSync(tokenPath, JSON.stringify(credentials, null, 2), 'utf8');
+    } catch (err) {
+      throw new Error(`Token refresh failed: ${err.message}. Delete ${tokenPath} and re-authenticate.`);
+    }
+  }
+
   return google.gmail({ version: 'v1', auth });
 }
 

@@ -34,7 +34,9 @@ URGENT_KEYWORDS = [
 class WhatsAppWatcher(BaseWatcher):
     def __init__(self, vault_path=None):
         super().__init__(vault_path, check_interval=30)
-        self.session_path = os.getenv("WHATSAPP_SESSION_PATH", "./whatsapp_session")
+        self.session_path = str(
+            Path(os.getenv("WHATSAPP_SESSION_PATH", "./whatsapp_session")).resolve()
+        )
         self.seen_messages = self._load_seen()
 
     # ── Seen cache ────────────────────────────────────────────────────────
@@ -103,7 +105,8 @@ class WhatsAppWatcher(BaseWatcher):
                     name = name_el.inner_text().strip() if name_el else "Unknown"
                     preview = prev_el.inner_text().strip() if prev_el else ""
 
-                    msg_id = f"{name}_{preview[:30]}"
+                    import hashlib
+                    msg_id = hashlib.md5(f"{name}_{preview}".encode()).hexdigest()[:16]
                     if msg_id in self.seen_messages:
                         continue
 

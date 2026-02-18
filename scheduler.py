@@ -168,9 +168,15 @@ def setup_schedule():
     logging.info(f"Daily briefing scheduled: {DAILY_TIME}")
 
     # Weekly CEO briefing (day is configurable via env)
-    day_fn = getattr(schedule.every(), WEEKLY_DAY, schedule.every().monday)
+    valid_days = {"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"}
+    if WEEKLY_DAY not in valid_days:
+        logging.warning(f"Invalid WEEKLY_BRIEFING_DAY '{WEEKLY_DAY}', defaulting to 'monday'")
+        _day = "monday"
+    else:
+        _day = WEEKLY_DAY
+    day_fn = getattr(schedule.every(), _day)
     day_fn.at(WEEKLY_TIME).do(weekly_ceo_briefing)
-    logging.info(f"CEO briefing scheduled: {WEEKLY_DAY} {WEEKLY_TIME}")
+    logging.info(f"CEO briefing scheduled: {_day} {WEEKLY_TIME}")
 
     # Stale approval check every 15 minutes
     schedule.every(15).minutes.do(check_stale_approvals)

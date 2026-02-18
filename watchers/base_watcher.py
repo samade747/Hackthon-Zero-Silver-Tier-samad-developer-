@@ -3,6 +3,7 @@ base_watcher.py — Shared base class for all Silver Tier watchers.
 All watchers inherit from BaseWatcher and implement check_for_updates().
 """
 
+import json
 import os
 import logging
 import time
@@ -69,8 +70,6 @@ class BaseWatcher:
     # ── Logging helper ────────────────────────────────────────────────────
 
     def _append_log(self, item: dict, action_file: Path):
-        import json
-
         log_file = self.logs_dir / f"{datetime.now().strftime('%Y-%m-%d')}.json"
         entry = {
             "timestamp": datetime.now().isoformat(),

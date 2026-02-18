@@ -24,6 +24,12 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from dotenv import load_dotenv
 
+try:
+    import yaml
+    _YAML_AVAILABLE = True
+except ImportError:
+    _YAML_AVAILABLE = False
+
 load_dotenv()
 
 logging.basicConfig(
@@ -42,18 +48,31 @@ DRY_RUN = os.getenv("DRY_RUN", "true").lower() == "true"
 # ── Frontmatter parser ────────────────────────────────────────────────────
 
 def parse_frontmatter(content: str) -> dict:
-    """Extract YAML-style frontmatter fields (simple key: value only)."""
-    fields = {}
+    """Extract YAML frontmatter fields. Uses PyYAML if available, fallback otherwise."""
     lines = content.split("\n")
-    in_block = False
-    for line in lines:
+    # Find the frontmatter block between the first two ---
+    if not lines[0].strip() == "---":
+        return {}
+    end = None
+    for i, line in enumerate(lines[1:], start=1):
         if line.strip() == "---":
-            if not in_block:
-                in_block = True
-                continue
-            else:
-                break
-        if in_block and ":" in line:
+            end = i
+            break
+    if end is None:
+        return {}
+    fm_text = "\n".join(lines[1:end])
+
+    if _YAML_AVAILABLE:
+        try:
+            parsed = yaml.safe_load(fm_text)
+            return {k: str(v) for k, v in parsed.items()} if isinstance(parsed, dict) else {}
+        except yaml.YAMLError:
+            pass
+
+    # Fallback: simple key: value (handles values with colons by taking everything after first colon)
+    fields = {}
+    for line in fm_text.split("\n"):
+        if ":" in line:
             key, _, value = line.partition(":")
             fields[key.strip()] = value.strip()
     return fields
